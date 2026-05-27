@@ -8,6 +8,15 @@
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#0d2a4d">
 
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QMPFNWVSLT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QMPFNWVSLT');
+</script>
+
 <!-- Open Graph for Meta -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://voicebahamas.com/">
@@ -604,6 +613,9 @@ document.addEventListener('DOMContentLoaded', function() {
     ctas.forEach(function(el) {
         el.addEventListener('click', function() {
             try {
+                if (typeof gtag === 'function') {
+                    gtag('event', 'cta_click_join_now', { campaign: 'VBM-FB' });
+                }
                 // Forward UTM params if any
                 var params = new URLSearchParams(window.location.search);
                 var fbclid = params.get('fbclid');
