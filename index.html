@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+  // A/B splitter — must run before anything renders. Preserves location.search
+  // so utm/c params carry to /v2. Stored choice sticks.
+  (function(){
+    try {
+      var v = localStorage.getItem('vb_variant');
+      if (!v) { v = Math.random() < 0.5 ? 'a' : 'b'; localStorage.setItem('vb_variant', v); }
+      if (v === 'b') { location.replace('/v2/' + location.search); }
+    } catch(e) {}
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>VoiceBahamas — Share Your Opinions. Get Rewarded for Your Time.</title>
@@ -15,6 +26,7 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-QMPFNWVSLT');
+  try { gtag('event', 'ab_view', { ab_variant: 'a' }); } catch(e) {}
 </script>
 
 <!-- Open Graph for Meta -->
@@ -388,7 +400,7 @@ a:hover { text-decoration: underline; }
             <h1>Share your opinions.<span class="accent">Get rewarded for your time.</span></h1>
             <p class="sub">Participate in short surveys about products and services used every day in The Bahamas. Your perspective helps shape what local businesses offer next.</p>
             <p style="font-size:15px;font-weight:600;color:#0d2a4d;margin-bottom:22px;">Earn up to <span style="color:#EDAB00;font-weight:800;">$20 in Amazon vouchers</span> by completing eligible surveys.</p>
-            <a href="https://earntings.com/signup?source=voicebahamas&c=VBM-FB&utm_source=voicebahamas" class="hero-cta" id="cta-primary">
+            <a href="https://earntings.com/signup?source=voicebahamas&c=VBM-FB&v=a&utm_source=voicebahamas" class="hero-cta" id="cta-primary">
                 Join Now — It's Free
                 <span style="font-size:18px;">→</span>
             </a>
@@ -524,7 +536,7 @@ a:hover { text-decoration: underline; }
     <div class="container">
         <h2>Ready to be heard?</h2>
         <p>Join Bahamian residents who are shaping the products and services around them — and being rewarded for their time.</p>
-        <a href="https://earntings.com/signup?source=voicebahamas&c=VBM-FB&utm_source=voicebahamas" class="hero-cta" id="cta-final">
+        <a href="https://earntings.com/signup?source=voicebahamas&c=VBM-FB&v=a&utm_source=voicebahamas" class="hero-cta" id="cta-final">
             Join Now — It's Free
             <span style="font-size:18px;">→</span>
         </a>
@@ -580,7 +592,7 @@ a:hover { text-decoration: underline; }
             <div>
                 <h4>Platform</h4>
                 <ul>
-                    <li><a href="https://earntings.com/signup?source=voicebahamas&c=VBM-FB&utm_source=voicebahamas">Sign Up</a></li>
+                    <li><a href="https://earntings.com/signup?source=voicebahamas&c=VBM-FB&v=a&utm_source=voicebahamas">Sign Up</a></li>
                     <li><a href="https://earntings.com/login?utm_source=voicebahamas">Sign In</a></li>
                     <li><a href="#how-it-works">How It Works</a></li>
                 </ul>
@@ -614,7 +626,7 @@ document.addEventListener('DOMContentLoaded', function() {
         el.addEventListener('click', function() {
             try {
                 if (typeof gtag === 'function') {
-                    gtag('event', 'cta_click_join_now', { campaign: 'VBM-FB' });
+                    gtag('event', 'cta_click_join_now', { campaign: 'VBM-FB', ab_variant: 'a' });
                 }
                 // Forward UTM params if any
                 var params = new URLSearchParams(window.location.search);
