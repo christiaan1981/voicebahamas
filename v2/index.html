@@ -15,6 +15,21 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-QMPFNWVSLT');
+
+  // Landing-view beacon (variant B). These visitors are the redirected B
+  // cohort that landed here from '/'. Dedup flag is set only on a 2xx so a
+  // blocked/failed beacon retries on the next pageload.
+  (function(){
+    try {
+      if (sessionStorage.getItem('vb_view_logged') === '1') return;
+      fetch('https://earntings.com/api/landing-view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variant: 'b', source: 'voicebahamas' }),
+        keepalive: true,
+      }).then(function(r){ if (r.ok) sessionStorage.setItem('vb_view_logged', '1'); }).catch(function(){});
+    } catch(e) {}
+  })();
 </script>
 
 <!-- Open Graph for Meta -->

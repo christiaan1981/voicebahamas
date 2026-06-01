@@ -11,6 +11,23 @@
       if (v === 'b') { location.replace('/v2/' + location.search); }
     } catch(e) {}
   })();
+
+  // Landing-view beacon (variant A only). Fires AFTER the splitter so B users
+  // who are being redirected to /v2 don't double-count from '/'. The B view
+  // fires from /v2's own beacon. Dedup flag is set only on a 2xx response so
+  // a blocked/failed beacon retries on the next pageload.
+  (function(){
+    try {
+      if (localStorage.getItem('vb_variant') !== 'a') return;
+      if (sessionStorage.getItem('vb_view_logged') === '1') return;
+      fetch('https://earntings.com/api/landing-view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variant: 'a', source: 'voicebahamas' }),
+        keepalive: true,
+      }).then(function(r){ if (r.ok) sessionStorage.setItem('vb_view_logged', '1'); }).catch(function(){});
+    } catch(e) {}
+  })();
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
