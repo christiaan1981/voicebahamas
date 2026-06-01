@@ -17,11 +17,18 @@
   gtag('config', 'G-QMPFNWVSLT');
 
   // Landing-view beacon (variant B). These visitors are the redirected B
-  // cohort that landed here from '/'. Dedup flag is set only on a 2xx so a
-  // blocked/failed beacon retries on the next pageload.
+  // cohort that landed here from '/'.
+  //
+  // Two-flag dedup:
+  //   1. window.__vb_view_firing — synchronous in-context lock set BEFORE
+  //      the fetch, blocking same-load re-entry from issuing a second POST.
+  //   2. sessionStorage 'vb_view_logged' — cross-load mark set ONLY on 2xx
+  //      so failed/blocked POSTs retry on the next pageload.
   (function(){
     try {
       if (sessionStorage.getItem('vb_view_logged') === '1') return;
+      if (window.__vb_view_firing) return;
+      window.__vb_view_firing = true;
       fetch('https://earntings.com/api/landing-view', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

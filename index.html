@@ -14,12 +14,22 @@
 
   // Landing-view beacon (variant A only). Fires AFTER the splitter so B users
   // who are being redirected to /v2 don't double-count from '/'. The B view
-  // fires from /v2's own beacon. Dedup flag is set only on a 2xx response so
-  // a blocked/failed beacon retries on the next pageload.
+  // fires from /v2's own beacon.
+  //
+  // Two-flag dedup:
+  //   1. window.__vb_view_firing — synchronous in-context lock set BEFORE the
+  //      fetch. Stops the same execution context (re-entry, prerender wakeup,
+  //      anything that re-runs this IIFE before the first POST resolves) from
+  //      issuing a second POST.
+  //   2. sessionStorage 'vb_view_logged' — cross-load mark set ONLY on a 2xx
+  //      response. Failed/blocked POSTs leave it unset so the next pageload
+  //      retries.
   (function(){
     try {
       if (localStorage.getItem('vb_variant') !== 'a') return;
       if (sessionStorage.getItem('vb_view_logged') === '1') return;
+      if (window.__vb_view_firing) return;
+      window.__vb_view_firing = true;
       fetch('https://earntings.com/api/landing-view', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
